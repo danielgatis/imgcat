@@ -7,7 +7,9 @@
 
 Display images and gifs in your terminal emulator.
 
-![demo](demo.gif)
+<p align="center">
+    <img src="https://github.com/danielgatis/imgcat/raw/master/demo.gif">
+</p>
 
 ### Installation
 
