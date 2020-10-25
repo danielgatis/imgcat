@@ -11,6 +11,12 @@ Display images and gifs in your terminal emulator.
     <img src="https://github.com/danielgatis/imgcat/raw/master/demo.gif">
 </p>
 
+### Features
+
+- Animated GIF support
+- Accept media through stdin
+- Transparency
+
 ### Installation
 
 First, [install Go](https://golang.org/doc/install).
