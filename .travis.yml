@@ -1,24 +1,13 @@
-language: go
-
 go:
-    - 1.x
+  - 1.x
 
-before_install:
-    - go get github.com/mitchellh/gox
-    - go get
-
-install:
-    - gox -osarch="darwin/amd64" -output="dist/{{.Dir}}-{{.OS}}-{{.Arch}}"
-    - gox -osarch="linux/amd64" -output="dist/{{.Dir}}-{{.OS}}-{{.Arch}}"
-  
 script:
-    - ls -l dist | grep imgcat
+  - curl -sfL https://git.io/goreleaser | sh -s -- check
 
 deploy:
-    provider: releases
-    token: "$GH_TOKEN"
-    file: dist/*
-    edge: true
-    overwrite: true
-    on:
-        tags: true
+- provider: script
+  skip_cleanup: true
+  script: curl -sL https://git.io/goreleaser | bash
+  on:
+    tags: true
+    condition: $TRAVIS_OS_NAME = linux

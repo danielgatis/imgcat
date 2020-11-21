@@ -10,6 +10,7 @@ imgcat
 *.dll
 *.so
 *.dylib
+dist/
 
 # Test binary, build with `go test -c`
 *.test
