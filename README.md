@@ -19,6 +19,24 @@ Display images and gifs in your terminal emulator.
 
 ### Installation
 
+#### MacOS
+
+```
+brew install danielgatis/imgcat/imgcat
+```
+
+#### Linux
+
+First, [install snapcraft](https://snapcraft.io/docs/installing-snapd).
+
+```
+sudo snap install imgcat
+```
+
+Alternatively, you can download a pre-built binary [here](https://github.com/danielgatis/imgcat/releases).
+
+### Build from source
+
 First, [install Go](https://golang.org/doc/install).
 
 Next, fetch and build the binary.
@@ -26,8 +44,6 @@ Next, fetch and build the binary.
 ```bash
 go get -u github.com/danielgatis/imgcat
 ```
-
-Alternatively, you can download a pre-built binary [here](https://github.com/danielgatis/imgcat/releases).
 
 ### Usage
 
