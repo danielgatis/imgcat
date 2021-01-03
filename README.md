@@ -33,6 +33,17 @@ First, [install snapcraft](https://snapcraft.io/docs/installing-snapd).
 sudo snap install imgcat
 ```
 
+#### Windows
+
+First, [install scoop](https://github.com/lukesampson/scoop#installation).
+
+```
+scoop bucket add org https://github.com/danielgatis/scoop-imgcat.git
+scoop install scoop-imgcat/imgcat
+```
+
+#### Download binaries
+
 Alternatively, you can download a pre-built binary [here](https://github.com/danielgatis/imgcat/releases).
 
 ### Build from source
