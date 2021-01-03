@@ -17,3 +17,22 @@ archives:
       amd64: x86_64
 snapshot:
   name_template: "{{ .Tag }}-next"
+changelog:
+  skip: true
+snapcrafts:
+  -
+    publish: true
+    summary: Display images and gifs in your terminal
+    description: Display images and gifs in your terminal
+brews:
+  -
+    skip_upload: false
+    name: imgcat
+    tap:
+      owner: danielgatis
+      name: homebrew-imgcat
+    url_template: "https://github.com/danielgatis/imgcat/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    description: Display images and gifs in your terminal
+    dependencies:
+      - name: go
+
