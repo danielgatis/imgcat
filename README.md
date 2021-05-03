@@ -38,7 +38,7 @@ sudo snap install imgcat
 First, [install scoop](https://github.com/lukesampson/scoop#installation).
 
 ```
-scoop bucket add org https://github.com/danielgatis/scoop-imgcat.git
+scoop bucket add scoop-imgcat https://github.com/danielgatis/scoop-imgcat.git
 scoop install scoop-imgcat/imgcat
 ```
 
