@@ -219,7 +219,9 @@ func escape(frames []image.Image) [][]string {
 }
 
 func print(frames [][]string) {
-	defer enableEcho(disableEcho())
+	if terminal.IsTerminal(int(os.Stdout.Fd())) {
+		defer enableEcho(disableEcho())
+	}
 
 	os.Stdout.WriteString(ANSI_CURSOR_HIDE)
 	os.Stdout.WriteString("\n")
@@ -260,7 +262,7 @@ func main() {
 	input := "stdin"
 
 	flaggy.DefaultParser.Name = "imgcat"
-	flaggy.DefaultParser.Version = "1.0.5"
+	flaggy.DefaultParser.Version = "1.0.6"
 	flaggy.AddPositionalValue(&input, "input", 1, false, "The input image.")
 	flaggy.Parse()
 
