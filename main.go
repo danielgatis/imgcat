@@ -18,6 +18,7 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/integrii/flaggy"
+	"github.com/mat/besticon/ico"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -61,7 +62,7 @@ func decode(r io.Reader) []image.Image {
 		log.Fatal("failed to read the input MIME type")
 	}
 
-	allowed := []string{"image/gif", "image/png", "image/jpeg", "image/bmp"}
+	allowed := []string{"image/gif", "image/png", "image/jpeg", "image/bmp", "image/x-icon"}
 	if !mimetype.EqualsAny(mime.String(), allowed...) {
 		log.Fatal("Invalid MIME type")
 	}
@@ -110,7 +111,15 @@ func decode(r io.Reader) []image.Image {
 
 		return frames
 	} else {
-		frame, _, err := image.Decode(bytes.NewReader(buf))
+		var frame image.Image
+		var err error
+
+		if mime.Is("image/gif") {
+			frame, err = ico.Decode(bytes.NewReader(buf))
+		} else {
+			frame, _, err = image.Decode(bytes.NewReader(buf))
+		}
+
 		if err != nil {
 			log.Fatalf("failed to decode the image: %v", err)
 		}
@@ -262,7 +271,7 @@ func main() {
 	input := "stdin"
 
 	flaggy.DefaultParser.Name = "imgcat"
-	flaggy.DefaultParser.Version = "1.0.6"
+	flaggy.DefaultParser.Version = "1.0.7"
 	flaggy.AddPositionalValue(&input, "input", 1, false, "The input image.")
 	flaggy.Parse()
 
