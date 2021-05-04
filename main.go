@@ -271,7 +271,7 @@ func main() {
 	input := "stdin"
 
 	flaggy.DefaultParser.Name = "imgcat"
-	flaggy.DefaultParser.Version = "1.0.7"
+	flaggy.DefaultParser.Version = "1.0.8"
 	flaggy.AddPositionalValue(&input, "input", 1, false, "The input image.")
 	flaggy.Parse()
 
