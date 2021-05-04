@@ -19,7 +19,7 @@ import (
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/integrii/flaggy"
 	"github.com/mat/besticon/ico"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 const RESIZE_OFFSET_Y = 8
@@ -146,8 +146,8 @@ func scale(frames []image.Image) []image.Image {
 	width := DEFAULT_TERM_WIDTH
 	height := DEFAULT_TERM_HEIGHT
 
-	if terminal.IsTerminal(int(os.Stdout.Fd())) {
-		if width, height, err = terminal.GetSize(int(os.Stdout.Fd())); err != nil {
+	if term.IsTerminal(int(os.Stdout.Fd())) {
+		if width, height, err = term.GetSize(int(os.Stdout.Fd())); err != nil {
 			log.Fatalf("failed to get the terminal size: %v", err)
 		}
 	}
@@ -228,7 +228,7 @@ func escape(frames []image.Image) [][]string {
 }
 
 func print(frames [][]string) {
-	if terminal.IsTerminal(int(os.Stdout.Fd())) {
+	if term.IsTerminal(int(os.Stdout.Fd())) {
 		defer enableEcho(disableEcho())
 	}
 
