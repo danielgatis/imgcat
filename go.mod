@@ -1,12 +1,12 @@
 module github.com/danielgatis/imgcat
 
-go 1.14
+go 1.16
 
 require (
 	github.com/disintegration/imaging v1.6.2
-	github.com/gabriel-vasile/mimetype v1.2.0
+	github.com/gabriel-vasile/mimetype v1.3.1
 	github.com/integrii/flaggy v1.4.4
 	github.com/mat/besticon v3.12.0+incompatible
-	golang.org/x/sys v0.0.0-20210503173754-0981d6026fa6
-	golang.org/x/term v0.0.0-20210503060354-a79de5458b56
+	golang.org/x/sys v0.0.0-20210917161153-d61c044b1678
+	golang.org/x/term v0.0.0-20210916214954-140adaaadfaf
 )

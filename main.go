@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -38,33 +39,48 @@ const ANSI_FG_TRANSPARENT_COLOR = "\x1b[0m "
 const ANSI_FG_RGB_COLOR = "\x1b[38;2;%d;%d;%dm▄"
 const ANSI_RESET = "\x1b[0m"
 
-func read(input string) io.Reader {
-	if input == "stdin" {
-		return bufio.NewReader(os.Stdin)
+func read(input string) []byte {
+	var r io.Reader
+
+	if input == "" {
+		r = bufio.NewReader(os.Stdin)
 	} else {
-		f, err := os.Open(input)
+		path, err := filepath.Abs(input)
 		if err != nil {
-			log.Fatalf("failed to read the image: %v", err)
+			log.Fatalf("failed to resolve the image path: %v", err)
 		}
 
-		return bufio.NewReader(f)
-	}
-}
+		f, err := os.Open(path)
+		if err != nil {
+			log.Fatalf("failed to open the image: %v", err)
+		}
 
-func decode(r io.Reader) []image.Image {
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Fatalf("failed to close the image: %v", err)
+			}
+		}()
+
+		r = bufio.NewReader(f)
+	}
+
 	buf, err := ioutil.ReadAll(r)
 	if err != nil {
-		log.Fatal("failed to read the input")
+		log.Fatalf("failed to read the image: %v", err)
 	}
 
+	return buf
+}
+
+func decode(buf []byte) []image.Image {
 	mime, err := mimetype.DetectReader(bytes.NewReader(buf))
 	if err != nil {
-		log.Fatal("failed to read the input MIME type")
+		log.Fatalf("failed to detect the mime type: %v", err)
 	}
 
 	allowed := []string{"image/gif", "image/png", "image/jpeg", "image/bmp", "image/x-icon"}
 	if !mimetype.EqualsAny(mime.String(), allowed...) {
-		log.Fatal("Invalid MIME type")
+		log.Fatal("invalid MIME type")
 	}
 
 	frames := make([]image.Image, 0)
@@ -268,10 +284,10 @@ func print(frames [][]string) {
 }
 
 func main() {
-	input := "stdin"
+	var input string
 
 	flaggy.DefaultParser.Name = "imgcat"
-	flaggy.DefaultParser.Version = "1.0.8"
+	flaggy.DefaultParser.Version = "1.0.9"
 	flaggy.AddPositionalValue(&input, "input", 1, false, "The input image.")
 	flaggy.Parse()
 
