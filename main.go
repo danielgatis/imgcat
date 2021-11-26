@@ -268,7 +268,7 @@ func main() {
 	var input string
 
 	flaggy.DefaultParser.Name = "imgcat"
-	flaggy.DefaultParser.Version = "1.0.11"
+	flaggy.DefaultParser.Version = "1.0.12"
 	flaggy.AddPositionalValue(&input, "input", 1, false, "The input image.")
 	flaggy.Parse()
 
