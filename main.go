@@ -1,18 +1,15 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"fmt"
 	"image"
 	"image/draw"
 	"image/gif"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -40,33 +37,17 @@ const ANSI_FG_RGB_COLOR = "\x1b[38;2;%d;%d;%dm▄"
 const ANSI_RESET = "\x1b[0m"
 
 func read(input string) []byte {
-	var r io.Reader
+	var err error
+	var buf []byte
 
 	if input == "" {
-		r = bufio.NewReader(os.Stdin)
+		if buf, err = ioutil.ReadAll(os.Stdin); err != nil {
+			log.Fatalf("failed to read the stdin: %v", err)
+		}
 	} else {
-		path, err := filepath.Abs(input)
-		if err != nil {
-			log.Fatalf("failed to resolve the image path: %v", err)
+		if buf, err = ioutil.ReadFile(input); err != nil {
+			log.Fatalf("failed to read the input file: %v", err)
 		}
-
-		f, err := os.Open(path)
-		if err != nil {
-			log.Fatalf("failed to open the image: %v", err)
-		}
-
-		defer func() {
-			if err := f.Close(); err != nil {
-				log.Fatalf("failed to close the image: %v", err)
-			}
-		}()
-
-		r = bufio.NewReader(f)
-	}
-
-	buf, err := ioutil.ReadAll(r)
-	if err != nil {
-		log.Fatalf("failed to read the image: %v", err)
 	}
 
 	return buf
@@ -287,7 +268,7 @@ func main() {
 	var input string
 
 	flaggy.DefaultParser.Name = "imgcat"
-	flaggy.DefaultParser.Version = "1.0.9"
+	flaggy.DefaultParser.Version = "1.0.10"
 	flaggy.AddPositionalValue(&input, "input", 1, false, "The input image.")
 	flaggy.Parse()
 
