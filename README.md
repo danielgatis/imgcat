@@ -53,6 +53,12 @@ First, [install Go](https://golang.org/doc/install).
 Next, fetch and build the binary.
 
 ```bash
+go install github.com/danielgatis/imgcat@latest
+```
+
+or, if you use pre-1.17 Go version, use the `go get` command: 
+
+```bash
 go get -u github.com/danielgatis/imgcat
 ```
 
