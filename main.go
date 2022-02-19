@@ -111,7 +111,7 @@ func decode(buf []byte) []image.Image {
 		var frame image.Image
 		var err error
 
-		if mime.Is("image/gif") {
+		if mime.Is("image/x-icon") {
 			frame, err = ico.Decode(bytes.NewReader(buf))
 		} else {
 			frame, _, err = image.Decode(bytes.NewReader(buf))
