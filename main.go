@@ -2,29 +2,30 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"image"
 	"image/draw"
 	"image/gif"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"os/signal"
 	"strings"
 	"time"
 
+	"github.com/creack/pty"
 	"github.com/disintegration/imaging"
 	"github.com/gabriel-vasile/mimetype"
-	"github.com/integrii/flaggy"
 	"github.com/mat/besticon/ico"
-	"golang.org/x/term"
+	"github.com/mattn/go-isatty"
 )
 
 const RESIZE_OFFSET_Y = 8
 const RESIZE_FACTOR_Y = 2
 const RESIZE_FACTOR_X = 1
-const DEFAULT_TERM_WIDTH = 80
-const DEFAULT_TERM_HEIGHT = 24
+const DEFAULT_TERM_COLS = 80
+const DEFAULT_TERM_ROWS = 24
 const FPS = 15
 
 const ANSI_CURSOR_UP = "\x1B[%dA"
@@ -41,12 +42,12 @@ func read(input string) []byte {
 	var buf []byte
 
 	if input == "" {
-		if buf, err = ioutil.ReadAll(os.Stdin); err != nil {
-			log.Fatalf("failed to read the stdin: %v", err)
+		if buf, err = io.ReadAll(os.Stdin); err != nil {
+			log.Panicf("failed to read the stdin: %v", err)
 		}
 	} else {
-		if buf, err = ioutil.ReadFile(input); err != nil {
-			log.Fatalf("failed to read the input file: %v", err)
+		if buf, err = os.ReadFile(input); err != nil {
+			log.Panicf("failed to read the input file: %v", err)
 		}
 	}
 
@@ -56,7 +57,7 @@ func read(input string) []byte {
 func decode(buf []byte) []image.Image {
 	mime, err := mimetype.DetectReader(bytes.NewReader(buf))
 	if err != nil {
-		log.Fatalf("failed to detect the mime type: %v", err)
+		log.Panicf("failed to detect the mime type: %v", err)
 	}
 
 	allowed := []string{"image/gif", "image/png", "image/jpeg", "image/bmp", "image/x-icon"}
@@ -70,7 +71,7 @@ func decode(buf []byte) []image.Image {
 		gifImage, err := gif.DecodeAll(bytes.NewReader(buf))
 
 		if err != nil {
-			log.Fatalf("failed to decode the gif: %v", err)
+			log.Panicf("failed to decode the gif: %v", err)
 		}
 
 		var lowestX int
@@ -118,7 +119,7 @@ func decode(buf []byte) []image.Image {
 		}
 
 		if err != nil {
-			log.Fatalf("failed to decode the image: %v", err)
+			log.Panicf("failed to decode the image: %v", err)
 		}
 
 		imb := frame.Bounds()
@@ -140,17 +141,17 @@ func scale(frames []image.Image) []image.Image {
 
 	var err error
 
-	width := DEFAULT_TERM_WIDTH
-	height := DEFAULT_TERM_HEIGHT
+	cols := DEFAULT_TERM_COLS
+	rows := DEFAULT_TERM_ROWS
 
-	if term.IsTerminal(int(os.Stdout.Fd())) {
-		if width, height, err = term.GetSize(int(os.Stdout.Fd())); err != nil {
-			log.Fatalf("failed to get the terminal size: %v", err)
+	if isatty.IsTerminal(os.Stdout.Fd()) {
+		if rows, cols, err = pty.Getsize(os.Stdout); err != nil {
+			log.Panicf("failed to get the terminal size: %v", err)
 		}
 	}
 
-	w := width * RESIZE_FACTOR_X
-	h := (height - RESIZE_OFFSET_Y) * RESIZE_FACTOR_Y
+	w := cols * RESIZE_FACTOR_X
+	h := (rows - RESIZE_OFFSET_Y) * RESIZE_FACTOR_Y
 
 	l := len(frames)
 	r := make([]image.Image, l)
@@ -225,7 +226,7 @@ func escape(frames []image.Image) [][]string {
 }
 
 func print(frames [][]string) {
-	if term.IsTerminal(int(os.Stdout.Fd())) {
+	if isatty.IsTerminal(os.Stdout.Fd()) {
 		defer enableEcho(disableEcho())
 	}
 
@@ -265,12 +266,13 @@ func print(frames [][]string) {
 }
 
 func main() {
-	var input string
+	flag.Parse()
 
-	flaggy.DefaultParser.Name = "imgcat"
-	flaggy.DefaultParser.Version = "1.0.12"
-	flaggy.AddPositionalValue(&input, "input", 1, false, "The input image.")
-	flaggy.Parse()
+	input := ""
+	if len(flag.Args()) > 0 {
+		args := flag.Args()
+		input = args[0]
+	}
 
 	print(escape(scale(decode(read(input)))))
 }
