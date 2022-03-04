@@ -15,10 +15,11 @@ jobs:
         with:
           fetch-depth: 0
       -
-        name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v1
+        uses: snapcore/action-publish@v1
         with:
-            snapcraft_token: ${{ secrets.SNAPCRAFT_TOKEN }}
+            store_login: ${{ secrets.STORE_LOGIN }}
+            snap: ${{ steps.build.outputs.snap }}
+            release: edge
       -
         name: Set up Go
         uses: actions/setup-go@v2
