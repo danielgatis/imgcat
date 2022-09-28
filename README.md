@@ -30,7 +30,7 @@ brew install danielgatis/imgcat/imgcat
 First, [install snapcraft](https://snapcraft.io/docs/installing-snapd).
 
 ```
-sudo snap install imgcat
+sudo snap install --classic imgcat
 ```
 
 #### Windows

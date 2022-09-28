@@ -20,12 +20,10 @@ snapshot:
 changelog:
     skip: true
 snapcrafts:
-    - publish: true
+    - confinement: classic
+      publish: true
       summary: Display images and gifs in your terminal
       description: Display images and gifs in your terminal
-      apps:
-          imgcat:
-              plugs: ["home"]
 brews:
     - skip_upload: false
       name: imgcat
