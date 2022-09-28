@@ -20,8 +20,9 @@ snapshot:
 changelog:
     skip: true
 snapcrafts:
-    - confinement: classic
-      publish: true
+    - publish: true
+      confinement: classic
+      grade: stable
       summary: Display images and gifs in your terminal
       description: Display images and gifs in your terminal
 brews:
