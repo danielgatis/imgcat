@@ -22,10 +22,13 @@ changelog:
     skip: true
 snapcrafts:
     -
+        name: imgcat
         publish: true
-        confinement: classic
         summary: Display images and gifs in your terminal
         description: Display images and gifs in your terminal
+        apps:
+          imgcat:
+              plugs: ["home", "removable-media"]
 brews:
     -
         skip_upload: false

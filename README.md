@@ -30,7 +30,7 @@ brew install danielgatis/imgcat/imgcat
 First, [install snapcraft](https://snapcraft.io/docs/installing-snapd).
 
 ```
-sudo snap install --classic imgcat
+sudo snap install imgcat
 ```
 
 #### Windows
@@ -56,7 +56,7 @@ Next, fetch and build the binary.
 go install github.com/danielgatis/imgcat@latest
 ```
 
-or, if you use pre-1.17 Go version, use the `go get` command: 
+or, if you use pre-1.17 Go version, use the `go get` command:
 
 ```bash
 go get -u github.com/danielgatis/imgcat
