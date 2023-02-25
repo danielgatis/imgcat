@@ -8,7 +8,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.0
 	github.com/mat/besticon v3.12.0+incompatible
 	github.com/mattn/go-isatty v0.0.14
-	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9
+	golang.org/x/sys v0.1.0
 )
 
 require (
