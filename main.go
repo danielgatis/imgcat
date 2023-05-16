@@ -37,6 +37,8 @@ const ANSI_FG_TRANSPARENT_COLOR = "\x1b[0m "
 const ANSI_FG_RGB_COLOR = "\x1b[38;2;%d;%d;%dm▄"
 const ANSI_RESET = "\x1b[0m"
 
+var InterpolationType = imaging.Lanczos
+
 func read(input string) []byte {
 	var err error
 	var buf []byte
@@ -159,7 +161,7 @@ func scale(frames []image.Image) []image.Image {
 
 	for i, f := range frames {
 		go func(i int, f image.Image) {
-			c <- &data{i, imaging.Fit(f, w, h, imaging.Lanczos)}
+			c <- &data{i, imaging.Fit(f, w, h, InterpolationType)}
 		}(i, f)
 	}
 
@@ -266,12 +268,20 @@ func print(frames [][]string) {
 }
 
 func main() {
-	flag.Parse()
+	interpolation := flag.String("interpolation", "lanczos", "Interpolation method. Options: lanczos, nearest")
+	ParseFlags()
 
 	input := ""
 	if len(flag.Args()) > 0 {
 		args := flag.Args()
 		input = args[0]
+	}
+
+	switch *interpolation {
+	case "nearest":
+		InterpolationType = imaging.NearestNeighbor
+	default:
+		InterpolationType = imaging.Lanczos
 	}
 
 	print(escape(scale(decode(read(input)))))
