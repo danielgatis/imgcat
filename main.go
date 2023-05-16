@@ -62,7 +62,7 @@ func decode(buf []byte) []image.Image {
 
 	allowed := []string{"image/gif", "image/png", "image/jpeg", "image/bmp", "image/x-icon"}
 	if !mimetype.EqualsAny(mime.String(), allowed...) {
-		log.Fatal("invalid MIME type")
+		log.Fatalf("invalid MIME type: %s", mime.String())
 	}
 
 	frames := make([]image.Image, 0)
