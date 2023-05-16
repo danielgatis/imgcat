@@ -238,7 +238,14 @@ func print(frames [][]string) {
 	frameCount := len(frames)
 
 	if frameCount == 1 {
-		os.Stdout.WriteString(strings.Join(frames[0], ""))
+        var InnerFrames string
+        for _, f := range frames[0] {
+            InnerFrames += f;
+        }
+        _, err :=  os.Stdout.WriteString(InnerFrames);
+        if err != nil {
+            os.Stdout.WriteString(strings.Join(frames[0], ""))
+        }
 	} else {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, os.Interrupt)
