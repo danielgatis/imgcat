@@ -263,7 +263,7 @@ func print(frames [][]string) {
 			<-tick
 		}
 	}
-
+	os.Stdout.WriteString(ANSI_RESET)
 	os.Stdout.WriteString(ANSI_CURSOR_SHOW)
 }
 
