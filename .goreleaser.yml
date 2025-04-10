@@ -13,18 +13,24 @@ builds:
       - darwin
 
 archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
+  - format_overrides:
+      - goos: darwin
+        format: zip
+      - goos: linux
+        format: tar.gz
+      - goos: windows
+        format: zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
 snapshot:
   name_template: "{{ .Tag }}-next"
 
 changelog:
-  skip: true
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
 
 snapcrafts:
   - name: imgcat
@@ -33,6 +39,7 @@ snapcrafts:
     description: Display images and gifs in your terminal
     apps:
       imgcat:
+        command: imgcat
         plugs:
           - home
           - removable-media
@@ -40,15 +47,15 @@ snapcrafts:
 brews:
   - name: imgcat
     skip_upload: false
-    tap:
+    repository:
       owner: danielgatis
       name: homebrew-imgcat
     url_template: "https://github.com/danielgatis/imgcat/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
     description: Display images and gifs in your terminal
 
-scoop:
-  description: Display images and gifs in your terminal
-  url_template: "https://github.com/danielgatis/imgcat/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-  bucket:
-    owner: danielgatis
-    name: scoop-imgcat
+scoops:
+  - description: Display images and gifs in your terminal
+    url_template: "https://github.com/danielgatis/imgcat/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    repository:
+      owner: danielgatis
+      name: scoop-imgcat
