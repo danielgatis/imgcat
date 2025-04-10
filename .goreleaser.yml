@@ -1,46 +1,54 @@
+version: 2
+
 before:
-    hooks:
-        - go mod download
+  hooks:
+    - go mod download
+
 builds:
-    - env:
-          - CGO_ENABLED=0
-      goos:
-          - linux
-          - windows
-          - darwin
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+
 archives:
-    -
-        replacements:
-            darwin: Darwin
-            linux: Linux
-            windows: Windows
-            386: i386
-            amd64: x86_64
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+
 snapshot:
-    name_template: "{{ .Tag }}-next"
+  name_template: "{{ .Tag }}-next"
+
 changelog:
-    skip: true
+  skip: true
+
 snapcrafts:
-    -
-        name: imgcat
-        publish: true
-        summary: Display images and gifs in your terminal
-        description: Display images and gifs in your terminal
-        apps:
-          imgcat:
-              plugs: ["home", "removable-media"]
-brews:
-    -
-        skip_upload: false
-        name: imgcat
-        tap:
-            owner: danielgatis
-            name: homebrew-imgcat
-        url_template: "https://github.com/danielgatis/imgcat/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-        description: Display images and gifs in your terminal
-scoop:
-    url_template: "https://github.com/danielgatis/imgcat/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-    bucket:
-        owner: danielgatis
-        name: scoop-imgcat
+  - name: imgcat
+    publish: true
+    summary: Display images and gifs in your terminal
     description: Display images and gifs in your terminal
+    apps:
+      imgcat:
+        plugs:
+          - home
+          - removable-media
+
+brews:
+  - name: imgcat
+    skip_upload: false
+    tap:
+      owner: danielgatis
+      name: homebrew-imgcat
+    url_template: "https://github.com/danielgatis/imgcat/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    description: Display images and gifs in your terminal
+
+scoop:
+  description: Display images and gifs in your terminal
+  url_template: "https://github.com/danielgatis/imgcat/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+  bucket:
+    owner: danielgatis
+    name: scoop-imgcat
