@@ -38,8 +38,6 @@ brews:
             name: homebrew-imgcat
         url_template: "https://github.com/danielgatis/imgcat/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
         description: Display images and gifs in your terminal
-        dependencies:
-            - name: go
 scoop:
     url_template: "https://github.com/danielgatis/imgcat/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
     bucket:
