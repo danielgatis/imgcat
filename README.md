@@ -8,7 +8,7 @@
 Display images and gifs in your terminal emulator.
 
 <p align="center">
-    <img src="https://github.com/danielgatis/imgcat/raw/master/demo.gif">
+    <img src="./demo.gif">
 </p>
 
 ### Features
