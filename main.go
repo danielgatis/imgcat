@@ -38,6 +38,8 @@ const ANSI_FG_RGB_COLOR = "\x1b[38;2;%d;%d;%dm▄"
 const ANSI_RESET = "\x1b[0m"
 
 var InterpolationType = imaging.Lanczos
+var imageOperation = imaging.Fit
+
 var NUM_ADDITIONAL_LINES = 2
 var SILENT = "false"
 
@@ -163,7 +165,7 @@ func scale(frames []image.Image) []image.Image {
 
 	for i, f := range frames {
 		go func(i int, f image.Image) {
-			c <- &data{i, imaging.Fit(f, w, h, InterpolationType)}
+			c <- &data{i, imageOperation(f, w, h, InterpolationType)}
 		}(i, f)
 	}
 
@@ -274,6 +276,7 @@ func print(frames [][]string) {
 func main() {
 	interpolation := flag.String("interpolation", "lanczos", "Interpolation method. Options: lanczos, nearest")
 	silent := flag.String("silent", "false", "Hide Exit message. Options: true, false")
+	resizeType := flag.String("type", "fit", "Image resize type. Options: fit, resize")
 
 	ParseFlags()
 
@@ -293,6 +296,10 @@ func main() {
 	if *silent != "false" {
 		NUM_ADDITIONAL_LINES = 0
 		SILENT = *silent
+	}
+
+	if *resizeType != "fit" {
+		imageOperation = imaging.Resize
 	}
 
 
