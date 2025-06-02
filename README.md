@@ -76,6 +76,12 @@ Display a local image
 imgcat path/to/image.png
 ```
 
+#### Options
+- `-h`, `-help`: Show help message
+- `-interpolation`: Set interpolation method (default: `lanczos`)
+  - `nearest`: Fastest resampling filter, no antialiasing.
+  - `lanczos`: A high-quality resampling filter for photographic images yielding sharp results.
+- `-silent`: Hide Exit message (default: false). 
 ### Requirements
 
 Your terminal emulator must be support `true color` and use a `monospaced font` that includes the lower half block unicode character (`▄ U+2584`).
