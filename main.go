@@ -21,7 +21,7 @@ import (
 	"github.com/mattn/go-isatty"
 )
 
-const RESIZE_OFFSET_Y = 8
+var RESIZE_OFFSET_Y = 8
 const RESIZE_FACTOR_Y = 2
 const RESIZE_FACTOR_X = 1
 const DEFAULT_TERM_COLS = 80
@@ -277,6 +277,7 @@ func main() {
 	interpolation := flag.String("interpolation", "lanczos", "Interpolation method. Options: lanczos, nearest")
 	silent := flag.String("silent", "false", "Hide Exit message. Options: true, false")
 	resizeType := flag.String("type", "fit", "Image resize type. Options: fit, resize")
+	flag.IntVar(&RESIZE_OFFSET_Y, "top-offset",RESIZE_OFFSET_Y , "Offset from the top of the terminal to start rendering the image")
 
 	ParseFlags()
 
