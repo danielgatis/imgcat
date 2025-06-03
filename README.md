@@ -83,7 +83,7 @@ imgcat path/to/image.png
   - `lanczos`: A high-quality resampling filter for photographic images yielding sharp results.
 - `-silent`: Hide Exit message (default: false). 
 - `-top-offset`: Offset from the top of the terminal to start rendering the image (default 8)
-- `type`: Image resize type. Options: fit, resize (default "fit")
+- `-type`: Image resize type. Options: fit, resize (default "fit")
 
 ### Requirements
 
