@@ -21,7 +21,7 @@ import (
 	"github.com/mattn/go-isatty"
 )
 
-const RESIZE_OFFSET_Y = 8
+var RESIZE_OFFSET_Y = 8
 const RESIZE_FACTOR_Y = 2
 const RESIZE_FACTOR_X = 1
 const DEFAULT_TERM_COLS = 80
@@ -38,6 +38,10 @@ const ANSI_FG_RGB_COLOR = "\x1b[38;2;%d;%d;%dm▄"
 const ANSI_RESET = "\x1b[0m"
 
 var InterpolationType = imaging.Lanczos
+var imageOperation = imaging.Fit
+
+var NUM_ADDITIONAL_LINES = 2
+var SILENT = "false"
 
 func read(input string) []byte {
 	var err error
@@ -161,7 +165,7 @@ func scale(frames []image.Image) []image.Image {
 
 	for i, f := range frames {
 		go func(i int, f image.Image) {
-			c <- &data{i, imaging.Fit(f, w, h, InterpolationType)}
+			c <- &data{i, imageOperation(f, w, h, InterpolationType)}
 		}(i, f)
 	}
 
@@ -244,7 +248,7 @@ func print(frames [][]string) {
 		signal.Notify(c, os.Interrupt)
 
 		tick := time.Tick(time.Second / time.Duration(FPS))
-		h := len(frames[0]) + 2 // two extra lines for the exit msg
+		h := len(frames[0]) + NUM_ADDITIONAL_LINES // two extra lines for the exit msg
 		playing := true
 
 		go func() {
@@ -258,7 +262,9 @@ func print(frames [][]string) {
 			}
 
 			os.Stdout.WriteString(strings.Join(frames[i%frameCount], ""))
-			os.Stdout.WriteString("\npress `ctrl c` to exit\n")
+			if SILENT == "false" {
+				os.Stdout.WriteString("\npress `ctrl c` to exit\n")
+			}
 
 			<-tick
 		}
@@ -269,6 +275,10 @@ func print(frames [][]string) {
 
 func main() {
 	interpolation := flag.String("interpolation", "lanczos", "Interpolation method. Options: lanczos, nearest")
+	silent := flag.String("silent", "false", "Hide Exit message. Options: true, false")
+	resizeType := flag.String("type", "fit", "Image resize type. Options: fit, resize")
+	flag.IntVar(&RESIZE_OFFSET_Y, "top-offset",RESIZE_OFFSET_Y , "Offset from the top of the terminal to start rendering the image")
+
 	ParseFlags()
 
 	input := ""
@@ -283,6 +293,16 @@ func main() {
 	default:
 		InterpolationType = imaging.Lanczos
 	}
+
+	if *silent != "false" {
+		NUM_ADDITIONAL_LINES = 0
+		SILENT = *silent
+	}
+
+	if *resizeType != "fit" {
+		imageOperation = imaging.Resize
+	}
+
 
 	print(escape(scale(decode(read(input)))))
 }
