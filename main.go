@@ -44,6 +44,8 @@ const (
 var (
 	interpolationType = imaging.Lanczos
 	imageOperation    = imaging.Fit
+	termCols          = 0
+	termRows          = 0
 	topOffset         = 1
 	silent            = false
 )
@@ -146,22 +148,37 @@ func decode(buf []byte) []image.Image {
 	return frames
 }
 
+func imgSize() (rows, cols int) {
+	// figure out real terminal size
+	if isatty.IsTerminal(os.Stdout.Fd()) {
+		rows, cols, _ = pty.Getsize(os.Stdout)
+	}
+
+	// account user specified size override
+	if termRows > 0 {
+		rows = termRows
+	}
+	if termCols > 0 {
+		cols = termCols
+	}
+
+	// fallback to default terminal size
+	if rows < 1 {
+		rows = DEFAULT_TERM_ROWS
+	}
+	if cols < 1 {
+		cols = DEFAULT_TERM_COLS
+	}
+	return
+}
+
 func scale(frames []image.Image) []image.Image {
 	type data struct {
 		i  int
 		im image.Image
 	}
 
-	var err error
-
-	cols := DEFAULT_TERM_COLS
-	rows := DEFAULT_TERM_ROWS
-
-	if isatty.IsTerminal(os.Stdout.Fd()) {
-		if rows, cols, err = pty.Getsize(os.Stdout); err != nil {
-			log.Panicf("failed to get the terminal size: %v", err)
-		}
-	}
+	rows, cols := imgSize()
 
 	w := cols * RESIZE_FACTOR_X
 	h := (rows - topOffset) * RESIZE_FACTOR_Y
@@ -291,6 +308,8 @@ func print(frames [][]string) {
 func main() {
 	interpolation := flag.String("interpolation", "lanczos", "Interpolation method. Options: lanczos, nearest")
 	resizeType := flag.String("type", "fit", "Image resize type. Options: fit, resize")
+	flag.IntVar(&termCols, "cols", termCols, "Number of terminal columns to use for rendering the image")
+	flag.IntVar(&termRows, "rows", termRows, "Number of terminal rows to use for rendering the image")
 	flag.IntVar(&topOffset, "top-offset", topOffset, "Offset from the top of the terminal to start rendering the image")
 	flag.BoolVar(&silent, "silent", false, "Hide exit message")
 
@@ -309,8 +328,11 @@ func main() {
 		interpolationType = imaging.Lanczos
 	}
 
-	if *resizeType != "fit" {
+	switch *resizeType {
+	case "resize":
 		imageOperation = imaging.Resize
+	default:
+		imageOperation = imaging.Fit
 	}
 
 	print(escape(scale(decode(read(input)))))
