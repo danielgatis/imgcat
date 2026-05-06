@@ -12,6 +12,6 @@ require (
 )
 
 require (
-	golang.org/x/image v0.26.0 // indirect
+	golang.org/x/image v0.39.0 // indirect
 	golang.org/x/net v0.39.0 // indirect
 )
