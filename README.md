@@ -81,9 +81,11 @@ imgcat path/to/image.png
 - `-interpolation`: Set interpolation method (default: `lanczos`)
   - `nearest`: Fastest resampling filter, no antialiasing.
   - `lanczos`: A high-quality resampling filter for photographic images yielding sharp results.
-- `-silent`: Hide Exit message (default: false). 
-- `-top-offset`: Offset from the top of the terminal to start rendering the image (default 8)
-- `-type`: Image resize type. Options: fit, resize (default "fit")
+- `-type`: Image resize type. Options: fit, resize (default: `fit`)
+- `-cols`: Number of terminal columns to use for rendering the image (default: terminal width)
+- `-rows`: Number of terminal rows to use for rendering the image (default: terminal height)
+- `-top-offset`: Offset from the top of the terminal to start rendering the image (default: 1)
+- `-silent`: Hide exit message (default: false)
 
 ### Requirements
 

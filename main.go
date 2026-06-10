@@ -22,27 +22,33 @@ import (
 	"golang.org/x/image/webp"
 )
 
-var RESIZE_OFFSET_Y = 8
-const RESIZE_FACTOR_Y = 2
-const RESIZE_FACTOR_X = 1
-const DEFAULT_TERM_COLS = 80
-const DEFAULT_TERM_ROWS = 24
-const FPS = 15
+const (
+	RESIZE_FACTOR_Y   = 2
+	RESIZE_FACTOR_X   = 1
+	DEFAULT_TERM_COLS = 80
+	DEFAULT_TERM_ROWS = 24
+	FPS               = 15
+)
 
-const ANSI_CURSOR_UP = "\x1B[%dA"
-const ANSI_CURSOR_HIDE = "\x1B[?25l"
-const ANSI_CURSOR_SHOW = "\x1B[?25h"
-const ANSI_BG_TRANSPARENT_COLOR = "\x1b[0;39;49m"
-const ANSI_BG_RGB_COLOR = "\x1b[48;2;%d;%d;%dm"
-const ANSI_FG_TRANSPARENT_COLOR = "\x1b[0m "
-const ANSI_FG_RGB_COLOR = "\x1b[38;2;%d;%d;%dm▄"
-const ANSI_RESET = "\x1b[0m"
+const (
+	ANSI_CURSOR_UP            = "\x1B[%dA"
+	ANSI_CURSOR_HIDE          = "\x1B[?25l"
+	ANSI_CURSOR_SHOW          = "\x1B[?25h"
+	ANSI_BG_TRANSPARENT_COLOR = "\x1b[0;39;49m"
+	ANSI_BG_RGB_COLOR         = "\x1b[48;2;%d;%d;%dm"
+	ANSI_FG_TRANSPARENT_COLOR = "\x1b[0m "
+	ANSI_FG_RGB_COLOR         = "\x1b[38;2;%d;%d;%dm▄"
+	ANSI_RESET                = "\x1b[0m"
+)
 
-var InterpolationType = imaging.Lanczos
-var imageOperation = imaging.Fit
-
-var NUM_ADDITIONAL_LINES = 2
-var SILENT = "false"
+var (
+	interpolationType = imaging.Lanczos
+	imageOperation    = imaging.Fit
+	termCols          = 0
+	termRows          = 0
+	topOffset         = 1
+	silent            = false
+)
 
 func read(input string) []byte {
 	var err error
@@ -133,7 +139,7 @@ func decode(buf []byte) []image.Image {
 
 		imb := frame.Bounds()
 		if imb.Max.X < 2 || imb.Max.Y < 2 {
-			log.Fatal("the input image is to small")
+			log.Fatal("the input image is too small")
 		}
 
 		frames = append(frames, frame)
@@ -142,25 +148,40 @@ func decode(buf []byte) []image.Image {
 	return frames
 }
 
+func imgSize() (rows, cols int) {
+	// figure out real terminal size
+	if isatty.IsTerminal(os.Stdout.Fd()) {
+		rows, cols, _ = pty.Getsize(os.Stdout)
+	}
+
+	// account user specified size override
+	if termRows > 0 {
+		rows = termRows
+	}
+	if termCols > 0 {
+		cols = termCols
+	}
+
+	// fallback to default terminal size
+	if rows < 1 {
+		rows = DEFAULT_TERM_ROWS
+	}
+	if cols < 1 {
+		cols = DEFAULT_TERM_COLS
+	}
+	return
+}
+
 func scale(frames []image.Image) []image.Image {
 	type data struct {
 		i  int
 		im image.Image
 	}
 
-	var err error
-
-	cols := DEFAULT_TERM_COLS
-	rows := DEFAULT_TERM_ROWS
-
-	if isatty.IsTerminal(os.Stdout.Fd()) {
-		if rows, cols, err = pty.Getsize(os.Stdout); err != nil {
-			log.Panicf("failed to get the terminal size: %v", err)
-		}
-	}
+	rows, cols := imgSize()
 
 	w := cols * RESIZE_FACTOR_X
-	h := (rows - RESIZE_OFFSET_Y) * RESIZE_FACTOR_Y
+	h := (rows - topOffset) * RESIZE_FACTOR_Y
 
 	l := len(frames)
 	r := make([]image.Image, l)
@@ -168,7 +189,7 @@ func scale(frames []image.Image) []image.Image {
 
 	for i, f := range frames {
 		go func(i int, f image.Image) {
-			c <- &data{i, imageOperation(f, w, h, InterpolationType)}
+			c <- &data{i, imageOperation(f, w, h, interpolationType)}
 		}(i, f)
 	}
 
@@ -240,7 +261,9 @@ func print(frames [][]string) {
 	}
 
 	os.Stdout.WriteString(ANSI_CURSOR_HIDE)
-	os.Stdout.WriteString("\n")
+	for i := 0; i < topOffset; i++ {
+		os.Stdout.WriteString("\n")
+	}
 
 	frameCount := len(frames)
 
@@ -249,9 +272,12 @@ func print(frames [][]string) {
 	} else {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, os.Interrupt)
+		defer signal.Stop(c)
 
-		tick := time.Tick(time.Second / time.Duration(FPS))
-		h := len(frames[0]) + NUM_ADDITIONAL_LINES // two extra lines for the exit msg
+		h := len(frames[0])
+		if !silent {
+			h += 2 // two extra lines for the exit msg
+		}
 		playing := true
 
 		go func() {
@@ -259,17 +285,20 @@ func print(frames [][]string) {
 			playing = false
 		}()
 
+		tick := time.NewTicker(time.Second / time.Duration(FPS))
+		defer tick.Stop()
+
 		for i := 0; playing; i++ {
 			if i != 0 {
 				os.Stdout.WriteString(fmt.Sprintf(ANSI_CURSOR_UP, h))
 			}
 
 			os.Stdout.WriteString(strings.Join(frames[i%frameCount], ""))
-			if SILENT == "false" {
+			if !silent {
 				os.Stdout.WriteString("\npress `ctrl c` to exit\n")
 			}
 
-			<-tick
+			<-tick.C
 		}
 	}
 	os.Stdout.WriteString(ANSI_RESET)
@@ -278,9 +307,11 @@ func print(frames [][]string) {
 
 func main() {
 	interpolation := flag.String("interpolation", "lanczos", "Interpolation method. Options: lanczos, nearest")
-	silent := flag.String("silent", "false", "Hide Exit message. Options: true, false")
 	resizeType := flag.String("type", "fit", "Image resize type. Options: fit, resize")
-	flag.IntVar(&RESIZE_OFFSET_Y, "top-offset",RESIZE_OFFSET_Y , "Offset from the top of the terminal to start rendering the image")
+	flag.IntVar(&termCols, "cols", termCols, "Number of terminal columns to use for rendering the image")
+	flag.IntVar(&termRows, "rows", termRows, "Number of terminal rows to use for rendering the image")
+	flag.IntVar(&topOffset, "top-offset", topOffset, "Offset from the top of the terminal to start rendering the image")
+	flag.BoolVar(&silent, "silent", false, "Hide exit message")
 
 	ParseFlags()
 
@@ -292,20 +323,17 @@ func main() {
 
 	switch *interpolation {
 	case "nearest":
-		InterpolationType = imaging.NearestNeighbor
+		interpolationType = imaging.NearestNeighbor
 	default:
-		InterpolationType = imaging.Lanczos
+		interpolationType = imaging.Lanczos
 	}
 
-	if *silent != "false" {
-		NUM_ADDITIONAL_LINES = 0
-		SILENT = *silent
-	}
-
-	if *resizeType != "fit" {
+	switch *resizeType {
+	case "resize":
 		imageOperation = imaging.Resize
+	default:
+		imageOperation = imaging.Fit
 	}
-
 
 	print(escape(scale(decode(read(input)))))
 }
