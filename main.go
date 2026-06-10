@@ -19,6 +19,7 @@ import (
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/mat/besticon/ico"
 	"github.com/mattn/go-isatty"
+	"golang.org/x/image/webp"
 )
 
 var RESIZE_OFFSET_Y = 8
@@ -66,7 +67,7 @@ func decode(buf []byte) []image.Image {
 		log.Panicf("failed to detect the mime type: %v", err)
 	}
 
-	allowed := []string{"image/gif", "image/png", "image/jpeg", "image/bmp", "image/x-icon"}
+	allowed := []string{"image/gif", "image/png", "image/jpeg", "image/bmp", "image/x-icon", "image/webp"}
 	if !mimetype.EqualsAny(mime.String(), allowed...) {
 		log.Fatalf("invalid MIME type: %s", mime.String())
 	}
@@ -120,6 +121,8 @@ func decode(buf []byte) []image.Image {
 
 		if mime.Is("image/x-icon") {
 			frame, err = ico.Decode(bytes.NewReader(buf))
+		} else if mime.Is("image/webp") {
+			frame, err = webp.Decode(bytes.NewReader(buf))
 		} else {
 			frame, _, err = image.Decode(bytes.NewReader(buf))
 		}
