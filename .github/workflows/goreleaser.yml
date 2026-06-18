@@ -41,5 +41,5 @@ jobs:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
         run: |
           for snap in dist/*.snap; do
-            snapcraft upload --release=edge,beta,candidate,stable "$snap"
+            snapcraft upload --no-wait --release=edge,beta,candidate,stable "$snap"
           done
