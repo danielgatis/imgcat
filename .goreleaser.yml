@@ -38,6 +38,9 @@ snapcrafts:
     publish: true
     summary: Display images and gifs in your terminal
     description: Display images and gifs in your terminal
+    goarch:
+      - amd64
+      - arm64
     apps:
       imgcat:
         command: imgcat
