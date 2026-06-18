@@ -91,6 +91,43 @@ imgcat path/to/image.png
 
 Your terminal emulator must be support `true color` and use a `monospaced font` that includes the lower half block unicode character (`▄ U+2584`).
 
+#### Checking truecolor support
+
+Run the following command to verify if your terminal supports 24-bit color:
+
+```bash
+echo $COLORTERM
+```
+
+The output should be `truecolor` or `24bit`. If it is empty or shows `256color`, imgcat output will appear garbled or incorrect.
+
+#### Using inside tmux
+
+tmux does not forward truecolor by default. Add the following lines to your `~/.tmux.conf`:
+
+```
+set -g default-terminal "tmux-256color"
+set -ga terminal-overrides ",*:Tc"
+```
+
+Then restart tmux or reload the config with `tmux source ~/.tmux.conf`.
+
+#### Using inside screen
+
+GNU Screen has limited truecolor support. Start it with:
+
+```bash
+screen -T xterm-truecolor
+```
+
+Or add the following to your `~/.screenrc`:
+
+```
+term xterm-truecolor
+```
+
+Note: older versions of screen may still not render colors correctly even with this setting. Upgrading to screen 4.6+ or switching to tmux is recommended.
+
 ### License
 
 Copyright (c) 2020-present [Daniel Gatis](https://github.com/danielgatis)
