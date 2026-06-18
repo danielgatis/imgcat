@@ -1,0 +1,21 @@
+name: imgcat
+base: core22
+version: git
+summary: Display images and gifs in your terminal
+description: Display images and gifs in your terminal emulator using truecolor ANSI escape codes.
+grade: stable
+confinement: strict
+
+apps:
+  imgcat:
+    command: bin/imgcat
+    plugs:
+      - home
+      - removable-media
+
+parts:
+  imgcat:
+    plugin: go
+    source: .
+    build-snaps:
+      - go/1.24/stable
