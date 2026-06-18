@@ -5,27 +5,15 @@ before:
     - go mod download
 
 builds:
-  - id: default
-    env:
+  - env:
       - CGO_ENABLED=0
     goos:
       - linux
       - windows
       - darwin
 
-  - id: snap
-    env:
-      - CGO_ENABLED=0
-    goos:
-      - linux
-    goarch:
-      - amd64
-      - arm64
-
 archives:
-  - ids:
-      - default
-    format_overrides:
+  - format_overrides:
       - goos: darwin
         formats:
           - zip
@@ -46,20 +34,6 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
-
-snapcrafts:
-  - name: imgcat
-    publish: false
-    summary: Display images and gifs in your terminal
-    description: Display images and gifs in your terminal
-    ids:
-      - snap
-    apps:
-      imgcat:
-        command: imgcat
-        plugs:
-          - home
-          - removable-media
 
 brews:
   - name: imgcat

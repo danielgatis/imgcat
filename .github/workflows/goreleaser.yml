@@ -15,11 +15,6 @@ jobs:
         with:
           fetch-depth: 0
       -
-        name: Install Snapcraft
-        run: |
-          sudo snap install snapcraft --classic
-          snapcraft --version
-      -
         name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -29,16 +24,28 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
-          version: 'v2.8.2'
+          version: 'v2.16.0'
           args: release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+
+  snap:
+    runs-on: ubuntu-latest
+    needs: goreleaser
+    steps:
       -
-        name: Publish snaps
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Install Snapcraft
+        run: |
+          sudo snap install snapcraft --classic
+      -
+        name: Build and publish snap
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
         run: |
-          for snap in dist/*.snap; do
+          snapcraft remote-build --launchpad-accept-public-upload
+          for snap in *.snap; do
             snapcraft upload "$snap" --release=edge,beta,candidate,stable
           done
