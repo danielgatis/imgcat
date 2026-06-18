@@ -319,6 +319,9 @@ func main() {
 	if len(flag.Args()) > 0 {
 		args := flag.Args()
 		input = args[0]
+	} else if isatty.IsTerminal(os.Stdin.Fd()) {
+		flag.Usage()
+		os.Exit(1)
 	}
 
 	switch *interpolation {
