@@ -23,7 +23,9 @@ builds:
       - arm64
 
 archives:
-  - format_overrides:
+  - ids:
+      - default
+    format_overrides:
       - goos: darwin
         formats:
           - zip
