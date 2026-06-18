@@ -5,26 +5,38 @@ before:
     - go mod download
 
 builds:
-  - env:
+  - id: default
+    env:
       - CGO_ENABLED=0
-      - GITHUB_TOKEN=${{ secrets.GH_TOKEN }}
     goos:
       - linux
       - windows
       - darwin
 
+  - id: snap
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
 archives:
   - format_overrides:
       - goos: darwin
-        format: zip
+        formats:
+          - zip
       - goos: linux
-        format: tar.gz
+        formats:
+          - tar.gz
       - goos: windows
-        format: zip
+        formats:
+          - zip
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
 snapshot:
-  name_template: "{{ .Tag }}-next"
+  version_template: "{{ .Tag }}-next"
 
 changelog:
   sort: asc
@@ -38,9 +50,8 @@ snapcrafts:
     publish: true
     summary: Display images and gifs in your terminal
     description: Display images and gifs in your terminal
-    goarch:
-      - amd64
-      - arm64
+    ids:
+      - snap
     apps:
       imgcat:
         command: imgcat
