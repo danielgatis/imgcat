@@ -36,9 +36,9 @@ jobs:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
       -
         name: Publish snaps
-        uses: canonical/action-publish@v1
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
-        with:
-          snap: dist/imgcat_*_linux_amd64.snap dist/imgcat_*_linux_arm64.snap
-          release: edge,beta,candidate,stable
+        run: |
+          for snap in dist/*.snap; do
+            snapcraft upload "$snap" --release=edge,beta,candidate,stable
+          done
