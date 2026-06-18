@@ -49,7 +49,7 @@ changelog:
 
 snapcrafts:
   - name: imgcat
-    publish: true
+    publish: false
     summary: Display images and gifs in your terminal
     description: Display images and gifs in your terminal
     ids:
