@@ -17,7 +17,6 @@ jobs:
       -
         name: Install Snapcraft
         run: |
-          sudo apt-get install -y squashfs-tools
           sudo snap install snapcraft --classic
           snapcraft --version
       -
@@ -37,9 +36,9 @@ jobs:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
       -
         name: Publish snaps
+        uses: canonical/action-publish@v1
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
-        run: |
-          for snap in dist/*.snap; do
-            snapcraft upload --no-wait --release=edge,beta,candidate,stable "$snap"
-          done
+        with:
+          snap: dist/imgcat_*_linux_amd64.snap dist/imgcat_*_linux_arm64.snap
+          release: edge,beta,candidate,stable
