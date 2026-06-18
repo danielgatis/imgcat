@@ -25,14 +25,6 @@ Display images and gifs in your terminal emulator.
 brew install danielgatis/imgcat/imgcat
 ```
 
-#### Linux
-
-First, [install snapcraft](https://snapcraft.io/docs/installing-snapd).
-
-```
-sudo snap install imgcat
-```
-
 #### Windows
 
 First, [install scoop](https://github.com/lukesampson/scoop#installation).
