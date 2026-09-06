@@ -69,14 +69,16 @@ imgcat path/to/image.png
 ```
 
 #### Options
+
 - `-h`, `-help`: Show help message
 - `-interpolation`: Set interpolation method (default: `lanczos`)
-  - `nearest`: Fastest resampling filter, no antialiasing.
-  - `lanczos`: A high-quality resampling filter for photographic images yielding sharp results.
+    - `nearest`: Fastest resampling filter, no antialiasing.
+    - `lanczos`: A high-quality resampling filter for photographic images yielding sharp results.
 - `-type`: Image resize type. Options: fit, resize (default: `fit`)
 - `-cols`: Number of terminal columns to use for rendering the image (default: terminal width)
 - `-rows`: Number of terminal rows to use for rendering the image (default: terminal height)
 - `-top-offset`: Offset from the top of the terminal to start rendering the image (default: 1)
+- `-optimize`: Reduces the number of characters output to the terminal at the cost of slightly more computing, but no visual loss
 - `-silent`: Hide exit message (default: false)
 
 ### Requirements
@@ -127,6 +129,7 @@ Copyright (c) 2020-present [Daniel Gatis](https://github.com/danielgatis)
 Licensed under [MIT License](./LICENSE)
 
 ### Buy me a coffee
+
 Liked some of my work? Buy me a coffee (or more likely a beer)
 
 <a href="https://www.buymeacoffee.com/danielgatis" target="_blank"><img src="https://bmc-cdn.nyc3.digitaloceanspaces.com/BMC-button-images/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;"></a>
